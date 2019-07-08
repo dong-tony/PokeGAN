@@ -51,7 +51,11 @@ class Autoencoder(nn.Module):
         x = self.decoder(x)
         return x
 #%%
-def train(model, num_epochs=5, batch_size=64, learning_rate=1e-3, shuffle = False):
+def train(model, num_epochs=5, batch_size=64, learning_rate=1e-3, shuffle = False, use_aug = True):
+    if use_aug:
+      dataset = expanded_dataset
+    else:
+      dataset = train_images
     torch.manual_seed(360)
     rand = random.randint(0,batch_size)
     fig, ax = plt.subplots(1, num_epochs+1, figsize = (num_epochs+1, 1))
@@ -84,9 +88,6 @@ def train(model, num_epochs=5, batch_size=64, learning_rate=1e-3, shuffle = Fals
             ax[epoch+1].imshow(np.moveaxis(outputs[epoch][2][rand].detach().cpu().numpy(),0,2))
     return outputs
 #%%
-model = Autoencoder().to(device)
-outputs = train(model, num_epochs = 2, shuffle = False)
-#%%
 def interpolate(model, index1, index2):
     x1 = train_images[index1][0].to(device)
     x2 = train_images[index2][0].to(device)
@@ -117,4 +118,6 @@ def interpolate(model, index1, index2):
     plt.subplot(2,10,20)
     plt.imshow(x1)
 #%%
-interpolate(model,7,2)
+model = Autoencoder().to(device)
+outputs = train(model, num_epochs = 2, use_aug = True)
+interpolate(model,329,360)
