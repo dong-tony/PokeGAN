@@ -1,10 +1,7 @@
 #%%
-#%%
 import torch
 import torch.nn as nn
-
 import matplotlib.pyplot as plt 
-
 #%%
 class Generator(nn.Module):
     def __init__(self):
@@ -42,3 +39,5 @@ print(testing2.shape)
 img = torch.reshape(testing2, (224,224,3))
 
 plt.imshow(img.detach().numpy())
+
+#%%
