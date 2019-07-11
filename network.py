@@ -1,11 +1,9 @@
-### File where generator and discriminator networks will be defined
-
-
 #%%
 ### Import components
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt 
+from torchvision import datasets, transforms
 
 #%%
 ### Generator networks
@@ -32,27 +30,6 @@ class Generator(nn.Module):
         x = x.view(x.size(0), 64*64, 1, 1)
         out = self.model(x)
         return out
-
-#%%
-# Test for generator, should return image of noise with 
-# input of 64*64 noise
-generation = Generator()
-
-testing2 = generation(torch.randn(1, 1, 64, 64))
-
-print(testing2.shape)
-
-img = torch.reshape(testing2, (224,224,3))
-
-plt.imshow(img.detach().numpy())
-
-
-#%%
-### Discriminator Network
-#%%
-train_images = datasets.ImageFolder(root='C:\\Users\\nucle\\Documents\\GitHub\\PokeGAN\\Data\\resized and sorted', 
-                                           transform=transforms.ToTensor())
-
 #%%
 class Discriminator(nn.Module):
     def __init__(self):
@@ -77,14 +54,28 @@ class Discriminator(nn.Module):
         x = self.model(x)
         flattened = x.view(-1, 56*56*16)
         fc_dis = self.fc_dis(flattened)
-        realfake = self.sigmoid(fc_dis)
+        authenticity = self.sigmoid(fc_dis)
         fc_aux = self.fc_aux(flattened)
-        classes = self.softmax(fc_aux)
-        return realfake, classes
+        ptype = self.softmax(fc_aux)
+        return authenticity, ptype
 
-#%%
-# Test for discriminator model, should retrun 2 tensors
-model = Discriminator()
-testing = model(train_images[0][0].unsqueeze(0))
+# #%%
+# # Test for generator, should return image of noise with 
+# # input of 64*64 noise
+# generation = Generator()
 
-testing
+# testing2 = generation(torch.randn(1, 1, 64, 64))
+
+# print(testing2.shape)
+
+# img = torch.reshape(testing2, (224,224,3))
+
+# plt.imshow(img.detach().numpy())
+# #%%
+# train_images = datasets.ImageFolder(root='.\\Data\\resized and sorted', 
+#                                            transform=transforms.ToTensor())
+# # Test for discriminator model, should retrun 2 tensors
+# model = Discriminator()
+# testing = model(train_images[0][0].unsqueeze(0))
+
+# testing
