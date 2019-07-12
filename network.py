@@ -80,25 +80,10 @@ class Discriminator(nn.Module):
         ptype = fc_aux
         return authenticity, ptype
 
-# #%%
-# # Test for generator, should return image of noise with 
-# # input of 64*64 noise
-# generation = Generator()
-
-# testing2 = generation(torch.randn(1, 1, 64, 64))
-
-# print(testing2.shape)
-
-# img = torch.reshape(testing2, (224,224,3))
-
-# plt.imshow(img.detach().numpy())
-#%%
-train_images = datasets.ImageFolder(root='.\\Data\\resized and sorted', 
-                                           transform=transforms.ToTensor())
-# Test for discriminator model, should retrun 2 tensors
-train_loader = torch.utils.data.DataLoader(train_images, batch_size=50, shuffle=True)
-for pokemon, ptype in train_loader:
-    model = Discriminator()
-    testing = model(pokemon)[0]
-    print(testing.shape)
-    break
+def init_weights(m):
+    classname = m.__class__.__name__
+    if classname.find('Conv') != -1:
+        m.weight.data.normal_(0.0, 0.02)
+    elif classname.find('BatchNorm') != -1:
+        m.weight.data.normal_(1.0, 0.02)
+        m.bias.data.fill_(0)

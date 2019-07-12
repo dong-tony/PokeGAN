@@ -9,11 +9,11 @@ from torchvision import datasets, transforms
 train_images = datasets.ImageFolder(root='.\\Data\\resized and sorted', transform=transforms.ToTensor())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 #%%
-def train(generator, discriminator, batch_size = 1, d_lr=0.001, g_lr=0.001, num_epochs=5):
+def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, num_epochs=5, save = False, name = 'Model x'):
     dis_criterion = nn.BCEWithLogitsLoss()
     aux_criterion = nn.CrossEntropyLoss()
-    d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=d_lr)
-    g_optimizer = torch.optim.Adam(generator.parameters(), lr=g_lr)
+    d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=d_lr, betas= (0.5,0.999))
+    g_optimizer = torch.optim.Adam(generator.parameters(), lr=g_lr, betas= (0.5,0.999))
 
     train_loader = torch.utils.data.DataLoader(train_images, batch_size=batch_size, shuffle=True)
 
@@ -86,5 +86,17 @@ def train(generator, discriminator, batch_size = 1, d_lr=0.001, g_lr=0.001, num_
         plt.figure(figsize=(9, 3))
         for k in range(18):
             plt.subplot(2, 9, k+1)
-            plt.imshow(test_images[k])
+            plt.gca().set_title('{}'.format(train_images.classes[k]))
+            plt.imshow((test_images[k]+1)/2)
         plt.show()
+        
+        if save and (epoch + 1) % 50 == 0:
+            torch.save(generator.state_dict(), '{}_GWeights_{}'.format(name, (epoch + 1)))
+            torch.save(discriminator.state_dict(), '{}_DWeights_{}'.format(name, (epoch + 1)))
+
+def evaluate(preds, labels):
+    correct = 0
+    preds_ = preds.data.max(1)[1]
+    correct = preds_.eq(labels.data).cpu().sum()
+    acc = float(correct) / float(len(labels.data))
+    return acc
