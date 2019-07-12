@@ -6,7 +6,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 import numpy as np
 from torchvision import datasets, transforms
-train_images = datasets.ImageFolder(root='.\\Data\\resized and sorted', transform=transforms.ToTensor())
+train_images = datasets.ImageFolder(root='./Data/resized and sorted', transform=transforms.ToTensor())
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 #%%
 def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, num_epochs=5, save = False, name = 'Model x'):
