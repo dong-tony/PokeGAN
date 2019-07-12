@@ -63,7 +63,7 @@ def train(model, num_epochs=5, batch_size=64, learning_rate=1e-3, shuffle = Fals
     optimizer = torch.optim.Adam(model.parameters(),
                                  lr=learning_rate, 
                                  weight_decay=1e-5) # <--
-    train_loader = torch.utils.data.DataLoader(expanded_dataset, 
+    train_loader = torch.utils.data.DataLoader(dataset, 
                                                batch_size=batch_size, 
                                                shuffle= shuffle)
     outputs = []
