@@ -29,7 +29,6 @@ test_images = np.moveaxis(test_images.detach().numpy(), 1,3)
 plt.figure(figsize=(18, 5))
 for k in range(18):
     plt.subplot(2, 9, k+1)
-    plt.gcf().patch.set_facecolor('black')
     plt.gca().set_title('{}'.format(train_images.classes[k]))
     plt.imshow(np.clip(test_images[k],0,1))
 plt.show()

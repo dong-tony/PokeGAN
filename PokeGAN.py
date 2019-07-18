@@ -11,4 +11,5 @@ G.apply(init_weights)
 ### load checkpoints
 D.load_state_dict(torch.load('./Checkpoints/0712 Collab/DWeights650'))
 G.load_state_dict(torch.load('./Checkpoints/0712 Collab/DWeights650'))
-train(G, D, batch_size = 50, num_epochs = 300, save = True, name = '0712 Model 1')
+###
+train(G, D, batch_size = 50, num_epochs = 300, save = True, name = '')
