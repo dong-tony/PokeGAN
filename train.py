@@ -88,25 +88,26 @@ def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, nu
             GLoss.backward()
             g_optimizer.step()
 
-        print('Epoch [%d/%d], d_loss: %.4f, g_loss: %.4f, D(x): %.4f, D(G(z)): %.4f, Class_acc_real: %.4f, Class_acc_fake: %.4f' 
+        print('Epoch [%d/%d], d_loss: %.3f, g_loss: %.3f, D(x): %.3f, D(G(z)): %.3f, Class_acc_real: %.3f, Class_acc_fake: %.3f' 
             % (epoch + 1, num_epochs, DLoss.item(), GLoss.item(), D_x, D_G_z, aux_acc_real, aux_acc_fake))
         
         # plot images
-        test_noise = torch.randn(18, 110).to(device)
-        eye = torch.eye(18)
-        for i in range(18):  
-            ptype_oh = eye[i]
-            test_noise[i,:18] = ptype_oh #first 18 contains type info
-        generator.eval()
-        discriminator.eval()
-        test_images = generator(test_noise).cpu()
-        test_images = np.moveaxis(test_images.detach().numpy(), 1,3)
-        plt.figure(figsize=(14, 4))
-        for k in range(18):
-            plt.subplot(2, 9, k+1)
-            plt.gca().set_title('{}'.format(train_images.classes[k]))
-            plt.imshow(np.clip(test_images[k],0,1))
-        plt.show()
+        if (epoch + 1) % 5 == 0:
+            test_noise = torch.randn(18, 110).to(device)
+            eye = torch.eye(18)
+            for i in range(18):  
+                ptype_oh = eye[i]
+                test_noise[i,:18] = ptype_oh #first 18 contains type info
+            generator.eval()
+            discriminator.eval()
+            test_images = generator(test_noise).cpu()
+            test_images = np.moveaxis(test_images.detach().numpy(), 1,3)
+            plt.figure(figsize=(14, 4))
+            for k in range(18):
+                plt.subplot(2, 9, k+1)
+                plt.gca().set_title('{}'.format(train_images.classes[k]))
+                plt.imshow(np.clip(test_images[k],0,1))
+            plt.show()
         
         if save and (epoch + 1) % 50 == 0:
             torch.save(generator.state_dict(), '{}_GWeights_{}'.format(name, (epoch + 1)))
