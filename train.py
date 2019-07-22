@@ -20,11 +20,13 @@ for i in range(3):
     for data in train_images:
         expanded_dataset.append(data)
 #%%
-def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, num_epochs=5, save = False, name = ''):
+def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, num_epochs=5, save = False, name = '', plot = False):
     dis_criterion = nn.BCEWithLogitsLoss()
     aux_criterion = nn.CrossEntropyLoss()
     d_optimizer = torch.optim.Adam(discriminator.parameters(), lr=d_lr, betas= (0.5,0.999))
     g_optimizer = torch.optim.Adam(generator.parameters(), lr=g_lr, betas= (0.5,0.999))
+    GLoss_list = []
+    DLoss_list = []
 
     train_loader = torch.utils.data.DataLoader(expanded_dataset, batch_size=batch_size, shuffle=True)
 
@@ -67,6 +69,7 @@ def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, nu
             D_G_z = torch.sigmoid(dis_output.data.mean())
 
             DLoss = DLoss_real + DLoss_fake
+            DLoss_list.append(DLoss.item())
             d_optimizer.step()
             ####################################
             # === Train the Generator   ===
@@ -85,6 +88,7 @@ def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, nu
             aux_loss_G = aux_criterion(aux_output, aux_label)
             aux_acc_fake = evaluate(aux_output, aux_label)
             GLoss = dis_loss_G + aux_loss_G
+            GLoss_list.append(GLoss.item())
             GLoss.backward()
             g_optimizer.step()
 
@@ -112,6 +116,15 @@ def train(generator, discriminator, batch_size = 1, d_lr=0.0002, g_lr=0.0002, nu
         if save and (epoch + 1) % 50 == 0:
             torch.save(generator.state_dict(), '{}_GWeights_{}'.format(name, (epoch + 1)))
             torch.save(discriminator.state_dict(), '{}_DWeights_{}'.format(name, (epoch + 1)))
+
+        if plot:
+            plt.title("Training Curve")
+            plt.plot(range(1, num_epochs + 1), DLoss_list, label="Discriminator Loss")
+            plt.plot(range(1, num_epochs + 1), GLoss_list, label="Generator Loss")
+            plt.xlabel("Epoch")
+            plt.ylabel("Loss")
+            plt.legend(loc='best')
+            plt.show()
 
 def evaluate(preds, labels):
     correct = 0
